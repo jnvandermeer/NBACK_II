@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 This experiment was created using PsychoPy3 Experiment Builder (v2022.1.4),
-    on October 10, 2022, at 12:52
+    on October 10, 2022, at 13:26
 If you publish work using this script the most relevant publication is:
 
     Peirce J, Gray JR, Simpson S, MacAskill M, Höchenberger R, Sogo H, Kastman E, Lindeløv JK. (2019) 
@@ -44,6 +44,7 @@ SEND_REAL_CODES=False
 
 # Open the Windows device manager, search for the "TriggerBox VirtualSerial Port (COM6)"
 # in "Ports /COM & LPT)" and enter the COM port number in the constructor.
+
 if SEND_REAL_CODES:
     port = serial.Serial('COM3')
 
@@ -56,15 +57,14 @@ if SEND_REAL_CODES:
     time.sleep(PulseWidth)
 
 def send_the_code(code):
-    
-    
+    # sending our codes!
     if SEND_REAL_CODES:
         port.write([code])
         time.sleep(0.01)
-        port.write([0])
-
+        port.write([0x00])
     else:
-        print(f'this code: {code}\n')
+        print(f'THIS CODE: {code}\n')
+
 
 
 send_the_code(1)
@@ -672,7 +672,6 @@ for thisEoecloop in eoecloop:
     
     # ------Prepare to start Routine "oc"-------
     continueRoutine = True
-    routineTimer.add(180.000000)
     # update component parameters for each repeat
     key_resp_10.keys = []
     key_resp_10.rt = []
@@ -697,7 +696,7 @@ for thisEoecloop in eoecloop:
     frameN = -1
     
     # -------Run Routine "oc"-------
-    while continueRoutine and routineTimer.getTime() > 0:
+    while continueRoutine:
         # get current time
         t = ocClock.getTime()
         tThisFlip = win.getFutureFlipTime(clock=ocClock)
@@ -735,14 +734,6 @@ for thisEoecloop in eoecloop:
             waitOnFlip = True
             win.callOnFlip(key_resp_10.clock.reset)  # t=0 on next screen flip
             win.callOnFlip(key_resp_10.clearEvents, eventType='keyboard')  # clear events on next screen flip
-        if key_resp_10.status == STARTED:
-            # is it time to stop? (based on global clock, using actual start)
-            if tThisFlipGlobal > key_resp_10.tStartRefresh + 180-frameTolerance:
-                # keep track of stop time/frame for later
-                key_resp_10.tStop = t  # not accounting for scr refresh
-                key_resp_10.frameNStop = frameN  # exact frame index
-                win.timeOnFlip(key_resp_10, 'tStopRefresh')  # time at next scr refresh
-                key_resp_10.status = FINISHED
         if key_resp_10.status == STARTED and not waitOnFlip:
             theseKeys = key_resp_10.getKeys(keyList=['s'], waitRelease=False)
             _key_resp_10_allKeys.extend(theseKeys)
@@ -783,6 +774,8 @@ for thisEoecloop in eoecloop:
         eoecloop.addData('key_resp_10.rt', key_resp_10.rt)
     eoecloop.addData('key_resp_10.started', key_resp_10.tStartRefresh)
     eoecloop.addData('key_resp_10.stopped', key_resp_10.tStopRefresh)
+    # the Routine "oc" was not non-slip safe, so reset the non-slip timer
+    routineTimer.reset()
     thisExp.nextEntry()
     
 # completed 1.0 repeats of 'eoecloop'

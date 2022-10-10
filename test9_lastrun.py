@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 This experiment was created using PsychoPy3 Experiment Builder (v2022.1.4),
-    on October 10, 2022, at 12:46
+    on October 10, 2022, at 13:19
 If you publish work using this script the most relevant publication is:
 
     Peirce J, Gray JR, Simpson S, MacAskill M, Höchenberger R, Sogo H, Kastman E, Lindeløv JK. (2019) 
@@ -39,23 +39,31 @@ def ReadThread(port):
         if port.inWaiting() > 0:
             print ("0x%X"%ord(port.read(1)))
 
+
+SEND_REAL_CODES=False
+
 # Open the Windows device manager, search for the "TriggerBox VirtualSerial Port (COM6)"
 # in "Ports /COM & LPT)" and enter the COM port number in the constructor.
-port = serial.Serial('COM3')
 
-# Start the read thread
-thread = threading.Thread(target=ReadThread, args=(port,))
-thread.start()
+if SEND_REAL_CODES:
+    port = serial.Serial('COM3')
 
-# Set the port to an initial state
-port.write([0x00])
-time.sleep(PulseWidth)
+    # Start the read thread
+    thread = threading.Thread(target=ReadThread, args=(port,))
+    thread.start()
+
+    # Set the port to an initial state
+    port.write([0x00])
+    time.sleep(PulseWidth)
 
 def send_the_code(code):
-    # print(code)
-    port.write([code])
-    time.sleep(0.01)
-    port.write([0])
+    # sending our codes!
+    if SEND_REAL_CODES:
+        port.write([code])
+        time.sleep(0.01)
+        port.write([0x00])
+    else:
+        print(f'THIS CODE: {}\n')
 
 
 
@@ -664,7 +672,6 @@ for thisEoecloop in eoecloop:
     
     # ------Prepare to start Routine "oc"-------
     continueRoutine = True
-    routineTimer.add(180.000000)
     # update component parameters for each repeat
     key_resp_10.keys = []
     key_resp_10.rt = []
@@ -689,7 +696,7 @@ for thisEoecloop in eoecloop:
     frameN = -1
     
     # -------Run Routine "oc"-------
-    while continueRoutine and routineTimer.getTime() > 0:
+    while continueRoutine:
         # get current time
         t = ocClock.getTime()
         tThisFlip = win.getFutureFlipTime(clock=ocClock)
@@ -727,14 +734,6 @@ for thisEoecloop in eoecloop:
             waitOnFlip = True
             win.callOnFlip(key_resp_10.clock.reset)  # t=0 on next screen flip
             win.callOnFlip(key_resp_10.clearEvents, eventType='keyboard')  # clear events on next screen flip
-        if key_resp_10.status == STARTED:
-            # is it time to stop? (based on global clock, using actual start)
-            if tThisFlipGlobal > key_resp_10.tStartRefresh + 180-frameTolerance:
-                # keep track of stop time/frame for later
-                key_resp_10.tStop = t  # not accounting for scr refresh
-                key_resp_10.frameNStop = frameN  # exact frame index
-                win.timeOnFlip(key_resp_10, 'tStopRefresh')  # time at next scr refresh
-                key_resp_10.status = FINISHED
         if key_resp_10.status == STARTED and not waitOnFlip:
             theseKeys = key_resp_10.getKeys(keyList=['s'], waitRelease=False)
             _key_resp_10_allKeys.extend(theseKeys)
@@ -775,6 +774,8 @@ for thisEoecloop in eoecloop:
         eoecloop.addData('key_resp_10.rt', key_resp_10.rt)
     eoecloop.addData('key_resp_10.started', key_resp_10.tStartRefresh)
     eoecloop.addData('key_resp_10.stopped', key_resp_10.tStopRefresh)
+    # the Routine "oc" was not non-slip safe, so reset the non-slip timer
+    routineTimer.reset()
     thisExp.nextEntry()
     
 # completed 1.0 repeats of 'eoecloop'
@@ -1228,7 +1229,8 @@ for thisQuestion in questions:
     if not skip_this_routine:
         
         # send the response code plz
-        send_the_code(int(slider.getRating()))
+        if slider.getRating() is not None:
+            send_the_code(int(slider.getRating()))
         
         ISI = core.StaticPeriod()
         ISI.start(0.2)  # start a period of 0.5s
